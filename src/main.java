@@ -100,26 +100,50 @@ public class main {
         if (startingX == endingX) {
             if (startingY-endingY==size-1 || endingY-startingY==size-1) {
                 shipPlaced = true;
-                /*if (startingY<endingY) {
+                if (startingY<endingY) {
                     for (int y=startingY; y<=endingY; y++) {
-                        if (battleshipGrid[startingX][y].equals(" O") || battleshipGrid[startingX + 1][y].equals(" O")
-                                || battleshipGrid[startingX - 1][y].equals(" O") || battleshipGrid[startingX][y + 1].equals(" O")
+                        if (battleshipGrid[startingX][y].equals(" O")
+                                || battleshipGrid[startingX - 1][y].equals(" O")
                                 || battleshipGrid[startingX][y - 1].equals(" O")) {
                             shipPlaced = false;
                             break;
+                        }
+                        if (startingX + 1 < 11) {
+                            if (battleshipGrid[startingX + 1][y].equals(" O")) {
+                                shipPlaced = false;
+                                break;
+                            }
+                        }
+                        if (y + 1 < 11) {
+                            if (battleshipGrid[startingX][y + 1].equals(" O")) {
+                                shipPlaced = false;
+                                break;
+                            }
                         }
                     }
                 }
                 else {
-                    for (int y=endingY; y<=startingY; y++) {
-                        if (battleshipGrid[startingX][y].equals(" O") || battleshipGrid[startingX + 1][y].equals(" O")
-                                || battleshipGrid[startingX - 1][y].equals(" O") || battleshipGrid[startingX][y + 1].equals(" O")
+                    for (int y=endingY; y<=startingY; y++) {;
+                        if (battleshipGrid[startingX][y].equals(" O")
+                                || battleshipGrid[startingX - 1][y].equals(" O")
                                 || battleshipGrid[startingX][y - 1].equals(" O")) {
                             shipPlaced = false;
                             break;
                         }
+                        if (startingX + 1 < 11) {
+                            if (battleshipGrid[startingX + 1][y].equals(" O")) {
+                                shipPlaced = false;
+                                break;
+                            }
+                        }
+                        if (y + 1 < 11) {
+                            if (battleshipGrid[startingX][y + 1].equals(" O")) {
+                                shipPlaced = false;
+                                break;
+                            }
+                        }
                     }
-                }*/
+                }
                 if (!shipPlaced) {
                     System.out.println("Error! You placed it too close to another one. Try again:");
                 }
@@ -130,26 +154,50 @@ public class main {
         else if (startingY == endingY) {
             if (startingX-endingX==size-1 || endingX-startingX==size-1) {
                 shipPlaced = true;
-                /*if (startingX<endingX) {
+                if (startingX<endingX) {
                     for (int x=startingX; x<=endingX; x++) {
-                        if (battleshipGrid[x][startingY].equals(" O") || battleshipGrid[x][startingY + 1].equals(" O")
-                                || battleshipGrid[x][startingY - 1].equals(" O") || battleshipGrid[x + 1][startingY].equals(" O")
+                        if (battleshipGrid[x][startingY].equals(" O")
+                                || battleshipGrid[x][startingY - 1].equals(" O")
                                 || battleshipGrid[x - 1][startingY].equals(" O")) {
                             shipPlaced = false;
                             break;
+                        }
+                        if (startingY + 1 < 11) {
+                            if (battleshipGrid[x][startingY + 1].equals(" O")) {
+                                shipPlaced = false;
+                                break;
+                            }
+                        }
+                        if (x + 1 < 11) {
+                            if (battleshipGrid[x + 1][startingY].equals(" O")) {
+                                shipPlaced = false;
+                                break;
+                            }
                         }
                     }
                 }
                 else {
                     for (int x=endingX; x<=startingX; x++) {
-                        if (battleshipGrid[x][startingY].equals(" O") || battleshipGrid[x][startingY + 1].equals(" O")
-                                || battleshipGrid[x][startingY - 1].equals(" O") || battleshipGrid[x + 1][startingY].equals(" O")
+                        if (battleshipGrid[x][startingY].equals(" O")
+                                || battleshipGrid[x][startingY - 1].equals(" O")
                                 || battleshipGrid[x - 1][startingY].equals(" O")) {
                             shipPlaced = false;
                             break;
                         }
+                        if (startingY + 1 < 11) {
+                            if (battleshipGrid[x][startingY + 1].equals(" O")) {
+                                shipPlaced = false;
+                                break;
+                            }
+                        }
+                        if (x + 1 < 11) {
+                            if (battleshipGrid[x + 1][startingY].equals(" O")) {
+                                shipPlaced = false;
+                                break;
+                            }
+                        }
                     }
-                }*/
+                }
                 if (!shipPlaced) {
                     System.out.println("Error! You placed it too close to another one. Try again:");
                 }
