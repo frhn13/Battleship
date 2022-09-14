@@ -8,6 +8,7 @@ public class main {
         boolean correctAttack=false;
 
         String[][] battleshipGrid = makingGrid();
+        String[][] emptyGrid = makingGrid();
         displayingGrid(battleshipGrid);
 
         while (!carrierPlaced) {
@@ -62,11 +63,11 @@ public class main {
         displayingGrid(battleshipGrid);
 
         System.out.println("\nThe game starts!\n");
-        displayingGrid(battleshipGrid);
+        displayingGrid(emptyGrid);
         System.out.println("\nTake a shot!");
         while (!correctAttack) {
             attackCoordinate = input.next().toUpperCase();
-            correctAttack = hitDetection(attackCoordinate, battleshipGrid);
+            correctAttack = hitDetection(attackCoordinate, battleshipGrid, emptyGrid);
             if (!correctAttack)
                 System.out.println("\nError! You entered the wrong coordinates! Try again:");
         }
@@ -97,7 +98,7 @@ public class main {
             for (String column : row) {
                 System.out.print(column);
             }
-            System.out.println("");
+            System.out.println();
         }
     }
 
@@ -139,7 +140,7 @@ public class main {
                     }
                 }
                 else {
-                    for (int y=endingY; y<=startingY; y++) {;
+                    for (int y=endingY; y<=startingY; y++) {
                         if (battleshipGrid[startingX][y].equals(" O")
                                 || battleshipGrid[startingX - 1][y].equals(" O")
                                 || battleshipGrid[startingX][y - 1].equals(" O")) {
@@ -161,7 +162,7 @@ public class main {
                     }
                 }
                 if (!shipPlaced) {
-                    System.out.println("Error! You placed it too close to another one. Try again:");
+                    System.out.println("Error! You placed it too close to another one. Try again:\n");
                 }
             }
             else
@@ -215,7 +216,7 @@ public class main {
                     }
                 }
                 if (!shipPlaced) {
-                    System.out.println("Error! You placed it too close to another one. Try again:");
+                    System.out.println("Error! You placed it too close to another one. Try again:\n");
                 }
             }
             else
@@ -261,7 +262,7 @@ public class main {
         }
     }
 
-    public static boolean hitDetection(String attackCoordinate, String[][] battleshipGrid) {
+    public static boolean hitDetection(String attackCoordinate, String[][] battleshipGrid, String[][] emptyGrid) {
         int attackX, attackY;
         attackX = attackCoordinate.charAt(0)-64;
         if (attackCoordinate.length() == 3)
@@ -273,13 +274,17 @@ public class main {
 
         if (battleshipGrid[attackX][attackY].equals(" O")) {
             battleshipGrid[attackX][attackY] = " X";
+            emptyGrid[attackX][attackY] = " X";
+            displayingGrid(emptyGrid);
+            System.out.println("\nYou hit a ship!\n");
             displayingGrid(battleshipGrid);
-            System.out.println("\nYou hit a ship!");
         }
         else {
             battleshipGrid[attackX][attackY] = " M";
-            displayingGrid(battleshipGrid);
+            emptyGrid[attackX][attackY] = " M";
+            displayingGrid(emptyGrid);
             System.out.println("\nYou missed!");
+            displayingGrid(battleshipGrid);
         }
         return true;
     }
