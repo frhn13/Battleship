@@ -5,10 +5,12 @@ public class main {
         Scanner input = new Scanner(System.in);
         boolean carrierPlaced=false, battleshipPlaced=false, submarinePlaced=false, cruiserPlaced=false, destroyerPlaced=false;
         String startCoordinate, endCoordinate, attackCoordinate;
-        boolean correctAttack=false;
+        boolean correctAttack=false, shipHit=false;
+        int player1Hits = 0;
+        String[][] shipCoordinates = new String[5][6];
 
         String[][] battleshipGrid = makingGrid();
-        String[][] emptyGrid = makingGrid();
+        String[][] playerGrid = makingGrid();
         displayingGrid(battleshipGrid);
 
         while (!carrierPlaced) {
@@ -17,7 +19,7 @@ public class main {
             endCoordinate = input.next().toUpperCase();
             carrierPlaced = takingCoordinates(startCoordinate, endCoordinate, 5, "Aircraft Carrier", false, battleshipGrid);
             if (carrierPlaced) {
-                updateGrid(startCoordinate, endCoordinate, battleshipGrid);
+                updateGrid(startCoordinate, endCoordinate, battleshipGrid, shipCoordinates, 0);
             }
         }
         displayingGrid(battleshipGrid);
@@ -27,7 +29,7 @@ public class main {
             endCoordinate = input.next().toUpperCase();
             battleshipPlaced = takingCoordinates(startCoordinate, endCoordinate, 4, "Battleship", false,battleshipGrid);
             if (battleshipPlaced) {
-                updateGrid(startCoordinate, endCoordinate, battleshipGrid);
+                updateGrid(startCoordinate, endCoordinate, battleshipGrid, shipCoordinates, 1);
             }
         }
         displayingGrid(battleshipGrid);
@@ -37,7 +39,7 @@ public class main {
             endCoordinate = input.next().toUpperCase();
             submarinePlaced = takingCoordinates(startCoordinate, endCoordinate, 3, "Submarine", false, battleshipGrid);
             if (submarinePlaced) {
-                updateGrid(startCoordinate, endCoordinate, battleshipGrid);
+                updateGrid(startCoordinate, endCoordinate, battleshipGrid, shipCoordinates, 2);
             }
         }
         displayingGrid(battleshipGrid);
@@ -47,7 +49,7 @@ public class main {
             endCoordinate = input.next().toUpperCase();
             cruiserPlaced = takingCoordinates(startCoordinate, endCoordinate, 3, "Cruiser", false, battleshipGrid);
             if (cruiserPlaced) {
-                updateGrid(startCoordinate, endCoordinate, battleshipGrid);
+                updateGrid(startCoordinate, endCoordinate, battleshipGrid, shipCoordinates, 3);
             }
         }
         displayingGrid(battleshipGrid);
@@ -57,19 +59,34 @@ public class main {
             endCoordinate = input.next().toUpperCase();
             destroyerPlaced = takingCoordinates(startCoordinate, endCoordinate, 2, "Destroyer", false, battleshipGrid);
             if (destroyerPlaced) {
-                updateGrid(startCoordinate, endCoordinate, battleshipGrid);
+                updateGrid(startCoordinate, endCoordinate, battleshipGrid, shipCoordinates, 4);
             }
         }
         displayingGrid(battleshipGrid);
+        for (int x=0; x<5; x++) {
+            for (int y=0; y<5; y++) {
+                if (shipCoordinates[x][y] == null) {
+                    shipCoordinates[x][y] = "X";
+                }
+            }
+            shipCoordinates[x][5] = "O";
+        }
 
         System.out.println("\nThe game starts!\n");
-        displayingGrid(emptyGrid);
-        System.out.println("\nTake a shot!");
-        while (!correctAttack) {
-            attackCoordinate = input.next().toUpperCase();
-            correctAttack = hitDetection(attackCoordinate, battleshipGrid, emptyGrid);
-            if (!correctAttack)
-                System.out.println("\nError! You entered the wrong coordinates! Try again:");
+        displayingGrid(playerGrid);
+        System.out.println("\nTake a shot!\n");
+        while (player1Hits != 17) {
+            while (!correctAttack) {
+                attackCoordinate = input.next().toUpperCase();
+                correctAttack = validCoordinate(attackCoordinate);
+                if (!correctAttack)
+                    System.out.println("\nError! You entered the wrong coordinates! Try again:\n");
+                else
+                    shipHit = hitDetection(attackCoordinate, battleshipGrid, playerGrid, shipCoordinates, player1Hits);
+                player1Hits = shipHit ? player1Hits+1:player1Hits;
+                if (player1Hits < 17)
+                    correctAttack = false;
+            }
         }
     }
 
@@ -227,8 +244,10 @@ public class main {
         return shipPlaced;
     }
 
-    public static void updateGrid(String startCoordinate, String endCoordinate, String[][] battleshipGrid) {
+    public static void updateGrid(String startCoordinate, String endCoordinate, String[][] battleshipGrid, String[][] shipCoordinates, int shipType) {
         int startingX, startingY, endingX, endingY;
+        int shipNum = 0;
+        String shipCoordinate;
         startingX = startCoordinate.charAt(0)-64;
         if (startCoordinate.length() == 3)
             startingY = Integer.parseInt(String.valueOf(startCoordinate.charAt(1)).concat(String.valueOf(startCoordinate.charAt(2))));
@@ -243,49 +262,101 @@ public class main {
         if (startingY<endingY) {
             for (int y=startingY; y<=endingY; y++) {
                 battleshipGrid[startingX][y] = " O";
+                shipCoordinate = String.valueOf((char) (startingX+64)).concat(String.valueOf(y));
+                shipCoordinates[shipType][shipNum] = shipCoordinate;
+                shipNum++;
             }
         }
         else if (startingY>endingY) {
             for (int y=endingY; y<=startingY; y++) {
                 battleshipGrid[startingX][y] = " O";
+                shipCoordinate = String.valueOf((char) (startingX+64)).concat(String.valueOf(y));
+                shipCoordinates[shipType][shipNum] = shipCoordinate;
+                shipNum++;
             }
         }
         else if (startingX<endingX) {
             for (int x=startingX; x<=endingX; x++) {
                 battleshipGrid[x][startingY] = " O";
+                shipCoordinate = String.valueOf((char) (x+64)).concat(String.valueOf(startingY));
+                shipCoordinates[shipType][shipNum] = shipCoordinate;
+                shipNum++;
             }
         }
         else if (startingX>endingX) {
             for (int x=endingX; x<=startingX; x++) {
                 battleshipGrid[x][startingY] = " O";
+                shipCoordinate = String.valueOf((char) (x+64)).concat(String.valueOf(startingY));
+                shipCoordinates[shipType][shipNum] = shipCoordinate;
+                shipNum++;
             }
         }
     }
 
-    public static boolean hitDetection(String attackCoordinate, String[][] battleshipGrid, String[][] emptyGrid) {
+    public static boolean validCoordinate(String coordinate) {
+        int x, y;
+        if (coordinate.length() > 3 || coordinate.length() < 2) {
+            return false;
+        }
+        x = coordinate.charAt(0)-64;
+        if (coordinate.length() == 3) {
+            y = Integer.parseInt(String.valueOf(coordinate.charAt(1)).concat(String.valueOf(coordinate.charAt(2))));
+        }
+        else {
+            y = Integer.parseInt(String.valueOf(coordinate.charAt(1)));
+        }
+        return x <= 10 && x >= 1 && y <= 10 && y >= 1;
+    }
+
+    public static boolean hitDetection(String attackCoordinate, String[][] battleshipGrid, String[][] emptyGrid, String[][] shipCoordinates, int score) {
+        boolean shipSunk = false;
         int attackX, attackY;
         attackX = attackCoordinate.charAt(0)-64;
         if (attackCoordinate.length() == 3)
             attackY = Integer.parseInt(String.valueOf(attackCoordinate.charAt(1)).concat(String.valueOf(attackCoordinate.charAt(2))));
         else
             attackY = Integer.parseInt(String.valueOf(attackCoordinate.charAt(1)));
-        if (attackX>10 || attackX<1 || attackY>10 || attackY<1)
-            return false;
 
         if (battleshipGrid[attackX][attackY].equals(" O")) {
             battleshipGrid[attackX][attackY] = " X";
             emptyGrid[attackX][attackY] = " X";
+            if (score == 16) {
+                displayingGrid(emptyGrid);
+                System.out.println("\nYou sank the last ship. You won. Congratulations!\n");
+                return true;
+            }
+            for (int x=0; x<5; x++) {
+                for (int y=0; y<5; y++) {
+                    if (shipCoordinates[x][y].equals(attackCoordinate)) {
+                        shipCoordinates[x][y] = "X";
+                    }
+                }
+                if (shipCoordinates[x][0].equals("X") && shipCoordinates[x][1].equals("X") && shipCoordinates[x][2].equals("X")
+                        && shipCoordinates[x][3].equals("X") && shipCoordinates[x][4].equals("X") && shipCoordinates[x][5].equals("O")) {
+                    shipSunk = true;
+                    shipCoordinates[x][5] = "X";
+                }
+            }
+            // displayingGrid(battleshipGrid);
             displayingGrid(emptyGrid);
-            System.out.println("\nYou hit a ship!\n");
-            displayingGrid(battleshipGrid);
+            if (shipSunk)
+                System.out.println("\nYou sank a ship! Specify a new target:\n");
+            else
+                System.out.println("\nYou hit a ship! Try again:\n");
+            return true;
         }
-        else {
+        else if (battleshipGrid[attackX][attackY].equals(" ~")){
             battleshipGrid[attackX][attackY] = " M";
             emptyGrid[attackX][attackY] = " M";
+            // displayingGrid(battleshipGrid);
             displayingGrid(emptyGrid);
-            System.out.println("\nYou missed!");
-            displayingGrid(battleshipGrid);
+            System.out.println("\nYou missed. Try again:\n");
+            return false;
         }
-        return true;
+        else {
+            displayingGrid(emptyGrid);
+            System.out.println("\nYou've already hit that coordinate. Try again:\n");
+            return false;
+        }
     }
 }
