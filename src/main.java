@@ -60,6 +60,8 @@ public class main {
                     break;
             }
             while (!nextTurn1) {
+                if (player1Hits>=17)
+                    break;
                 System.out.println("Press Enter and pass the move to player 2");
                 nextPlayer = input.nextLine();
                 if (nextPlayer.equals(""))
@@ -84,6 +86,8 @@ public class main {
                     break;
             }
             while (!nextTurn2) {
+                if (player1Hits>=17 || player2Hits>=17)
+                    break;
                 System.out.println("Press Enter and pass the move to player 1");
                 nextPlayer = input.nextLine();
                 if (nextPlayer.equals(""))
@@ -399,7 +403,7 @@ public class main {
         return x <= 10 && x >= 1 && y <= 10 && y >= 1;
     }
 
-    public static boolean hitDetection(String attackCoordinate, String[][] battleshipGrid, String[][] emptyGrid, String[][] shipCoordinates, int score) {
+    public static boolean hitDetection(String attackCoordinate, String[][] battleshipGrid, String[][] playerGrid, String[][] shipCoordinates, int score) {
         boolean shipSunk = false;
         int attackX, attackY;
         attackX = attackCoordinate.charAt(0)-64;
@@ -410,9 +414,9 @@ public class main {
 
         if (battleshipGrid[attackX][attackY].equals(" O")) {
             battleshipGrid[attackX][attackY] = " X";
-            emptyGrid[attackX][attackY] = " X";
+            playerGrid[attackX][attackY] = " X";
             if (score == 16) {
-                displayingGrid(emptyGrid);
+                displayingGrid(playerGrid);
                 return true;
             }
             for (int x=0; x<5; x++) {
@@ -427,7 +431,7 @@ public class main {
                     shipCoordinates[x][5] = "X";
                 }
             }
-            displayingGrid(emptyGrid);
+            displayingGrid(playerGrid);
             if (shipSunk)
                 System.out.println("\nYou sank a ship!\n");
             else
@@ -436,14 +440,14 @@ public class main {
         }
         else if (battleshipGrid[attackX][attackY].equals(" ~")){
             battleshipGrid[attackX][attackY] = " M";
-            emptyGrid[attackX][attackY] = " M";
-            displayingGrid(emptyGrid);
+            playerGrid[attackX][attackY] = " M";
+            displayingGrid(playerGrid);
             System.out.println("\nYou missed!\n");
             return false;
         }
         else {
-            displayingGrid(emptyGrid);
-            System.out.println("\nYou hit a ship!\n");
+            displayingGrid(playerGrid);
+            System.out.println("\nYou've already hit that location.\n");
             return false;
         }
     }
