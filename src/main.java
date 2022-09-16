@@ -1,17 +1,123 @@
 import java.util.Scanner;
 
 public class main {
+
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
-        boolean carrierPlaced=false, battleshipPlaced=false, submarinePlaced=false, cruiserPlaced=false, destroyerPlaced=false;
-        String startCoordinate, endCoordinate, attackCoordinate;
-        boolean correctAttack=false, shipHit=false;
-        int player1Hits = 0;
-        String[][] shipCoordinates = new String[5][6];
+        String attackCoordinate;
+        String nextPlayer;
+        boolean correctAttack1, correctAttack2, shipHit=false;
+        int player1Hits = 0, player2Hits = 0;
+        String[][] shipCoordinates1 = new String[5][6];
+        String[][] shipCoordinates2 = new String[5][6];
 
-        String[][] battleshipGrid = makingGrid();
-        String[][] playerGrid = makingGrid();
-        displayingGrid(battleshipGrid);
+        String[][] battleshipGrid1 = makingGrid();
+        String[][] player1Grid = makingGrid();
+        String[][] battleshipGrid2 = makingGrid();
+        String[][] player2Grid = makingGrid();
+
+        displayingGrid(battleshipGrid1);
+        System.out.println("Player 1, place your ships on the game field\n");
+        makingShips(battleshipGrid1, shipCoordinates1);
+        System.out.println("Press Enter and pass the move to another player");
+        nextPlayer = input.nextLine();
+        if (nextPlayer.equals("")) {
+            displayingGrid(battleshipGrid1);
+            System.out.println("\nPlayer 2, place your ships on the game field\n");
+            makingShips(battleshipGrid2, shipCoordinates2);
+        }
+
+
+        System.out.println("Press Enter and pass the move to another player");
+        nextPlayer = input.nextLine();
+        if (nextPlayer.equals("")) {
+            while (player1Hits < 17 && player2Hits < 17) {
+                correctAttack1 = false;
+                correctAttack2 = false;
+                boolean nextTurn1 = false;
+                boolean nextTurn2 = false;
+                while (!correctAttack1) {
+                    displayingGrid(player2Grid);
+                    System.out.println("---------------------");
+                    displayingGrid(battleshipGrid1);
+                    System.out.println("\nPlayer 1, it's your turn:\n");
+                    attackCoordinate = input.nextLine().toUpperCase();
+                    correctAttack1 = validCoordinate(attackCoordinate);
+                    if (!correctAttack1)
+                        System.out.println("\nError! You entered the wrong coordinates! Try again:\n");
+                    else
+                        shipHit = hitDetection(attackCoordinate, battleshipGrid2, player2Grid, shipCoordinates2, player1Hits);
+                    player1Hits = shipHit ? player1Hits + 1 : player1Hits;
+                    if (player1Hits >= 17)
+                        break;
+                }
+                while (!nextTurn1) {
+                    System.out.println("Press Enter and pass the move to another player");
+                    nextPlayer = input.nextLine();
+                    if (nextPlayer.equals(""))
+                        nextTurn1 = true;
+                }
+                while (!correctAttack2) {
+                    if (player1Hits >= 17) {
+                        break;
+                    }
+                    displayingGrid(player1Grid);
+                    System.out.println("---------------------");
+                    displayingGrid(battleshipGrid2);
+                    System.out.println("\nPlayer 2, it's your turn:\n");
+                    attackCoordinate = input.nextLine().toUpperCase();
+                    correctAttack2 = validCoordinate(attackCoordinate);
+                    if (!correctAttack2)
+                        System.out.println("\nError! You entered the wrong coordinates! Try again:\n");
+                    else
+                        shipHit = hitDetection(attackCoordinate, battleshipGrid1, player1Grid, shipCoordinates1, player2Hits);
+                    player2Hits = shipHit ? player2Hits + 1 : player2Hits;
+                    if (player2Hits >= 17)
+                        break;
+                }
+                while (!nextTurn2) {
+                    System.out.println("Press Enter and pass the move to another player");
+                    nextPlayer = input.nextLine();
+                    if (nextPlayer.equals(""))
+                        nextTurn2 = true;
+                }
+            }
+        }
+    }
+
+    public static String[][] makingGrid() {
+        String[][] battleshipGrid = new String[11][11];
+        for (int row=0; row<11; row++) {
+            for (int column=0; column<11; column++) {
+                if (row==0 && column==0)
+                    battleshipGrid[row][column] = "  ";
+
+                else if (row == 0)
+                    battleshipGrid[row][column] = column+" ";
+
+                else if (column == 0)
+                    battleshipGrid[row][column] = Character.toString(row+64);
+
+                else
+                    battleshipGrid[row][column] = " ~";
+            }
+        }
+        return battleshipGrid;
+    }
+
+    public static void displayingGrid(String[][] battleshipGrid) {
+        for (String[] row : battleshipGrid) {
+            for (String column : row) {
+                System.out.print(column);
+            }
+            System.out.println();
+        }
+    }
+
+    public static void makingShips(String[][] battleshipGrid, String[][] shipCoordinates) {
+        Scanner input = new Scanner(System.in);
+        boolean carrierPlaced=false, battleshipPlaced=false, submarinePlaced=false, cruiserPlaced=false, destroyerPlaced=false;
+        String startCoordinate, endCoordinate;
 
         while (!carrierPlaced) {
             System.out.println("Enter the coordinates of the Aircraft Carrier (5 cells)");
@@ -27,7 +133,7 @@ public class main {
             System.out.println("Enter the coordinates of the Battleship (4 cells)");
             startCoordinate = input.next().toUpperCase();
             endCoordinate = input.next().toUpperCase();
-            battleshipPlaced = takingCoordinates(startCoordinate, endCoordinate, 4, "Battleship", false,battleshipGrid);
+            battleshipPlaced = takingCoordinates(startCoordinate, endCoordinate, 4, "Battleship", false, battleshipGrid);
             if (battleshipPlaced) {
                 updateGrid(startCoordinate, endCoordinate, battleshipGrid, shipCoordinates, 1);
             }
@@ -72,51 +178,6 @@ public class main {
             shipCoordinates[x][5] = "O";
         }
 
-        System.out.println("\nThe game starts!\n");
-        displayingGrid(playerGrid);
-        System.out.println("\nTake a shot!\n");
-        while (player1Hits != 17) {
-            while (!correctAttack) {
-                attackCoordinate = input.next().toUpperCase();
-                correctAttack = validCoordinate(attackCoordinate);
-                if (!correctAttack)
-                    System.out.println("\nError! You entered the wrong coordinates! Try again:\n");
-                else
-                    shipHit = hitDetection(attackCoordinate, battleshipGrid, playerGrid, shipCoordinates, player1Hits);
-                player1Hits = shipHit ? player1Hits+1:player1Hits;
-                if (player1Hits < 17)
-                    correctAttack = false;
-            }
-        }
-    }
-
-    public static String[][] makingGrid() {
-        String[][] battleshipGrid = new String[11][11];
-        for (int row=0; row<11; row++) {
-            for (int column=0; column<11; column++) {
-                if (row==0 && column==0)
-                    battleshipGrid[row][column] = "  ";
-
-                else if (row == 0)
-                    battleshipGrid[row][column] = column+" ";
-
-                else if (column == 0)
-                    battleshipGrid[row][column] = Character.toString(row+64);
-
-                else
-                    battleshipGrid[row][column] = " ~";
-            }
-        }
-        return battleshipGrid;
-    }
-
-    public static void displayingGrid(String[][] battleshipGrid) {
-        for (String[] row : battleshipGrid) {
-            for (String column : row) {
-                System.out.print(column);
-            }
-            System.out.println();
-        }
     }
 
     public static boolean takingCoordinates(String startCoordinate, String endCoordinate, int size, String type, boolean shipPlaced, String[][] battleshipGrid) {
@@ -340,9 +401,9 @@ public class main {
             // displayingGrid(battleshipGrid);
             displayingGrid(emptyGrid);
             if (shipSunk)
-                System.out.println("\nYou sank a ship! Specify a new target:\n");
+                System.out.println("\nYou sank a ship!\n");
             else
-                System.out.println("\nYou hit a ship! Try again:\n");
+                System.out.println("\nYou hit a ship!\n");
             return true;
         }
         else if (battleshipGrid[attackX][attackY].equals(" ~")){
@@ -350,12 +411,12 @@ public class main {
             emptyGrid[attackX][attackY] = " M";
             // displayingGrid(battleshipGrid);
             displayingGrid(emptyGrid);
-            System.out.println("\nYou missed. Try again:\n");
+            System.out.println("\nYou missed!\n");
             return false;
         }
         else {
             displayingGrid(emptyGrid);
-            System.out.println("\nYou've already hit that coordinate. Try again:\n");
+            System.out.println("\nYou hit a ship!\n");
             return false;
         }
     }
